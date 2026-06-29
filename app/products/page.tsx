@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import ProductList from "@/components/ProductList";
 
 type Product = {
@@ -8,20 +9,30 @@ type Product = {
   category: string;
 };
 
-export default async function ProductsPage() {
-  const response = await fetch(
-    "https://fakestoreapi.com/products"
-  );
+export const metadata: Metadata = {
+  title: "Products | Dhinakar Store",
+  description: "Browse the premium collection with search and category filters.",
+};
 
+export default async function ProductsPage() {
+  const response = await fetch("https://fakestoreapi.com/products");
   const products: Product[] = await response.json();
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">
-        Products
-      </h1>
+    <div className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 rounded-[2rem] border border-white/10 bg-[#111119]/80 p-8 shadow-[0_20px_70px_rgba(0,0,0,0.35)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-indigo-300">Premium catalog</p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Discover the latest in luxury essentials
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-400">
+            Search, filter, and explore a beautifully curated collection of standout products.
+          </p>
+        </div>
 
-      <ProductList products={products} />
+        <ProductList products={products} />
+      </div>
     </div>
   );
 }

@@ -18,42 +18,46 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
 
   return (
-    <div className="border rounded-lg p-4 shadow hover:shadow-lg transition">
-      <Image
-        src={product.image}
-        alt={product.title}
-        width={200}
-        height={200}
-        className="mx-auto h-48 object-contain"
-        loading="eager"
-      />
+    <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-[#15151c]/90 p-4 shadow-[0_20px_70px_rgba(0,0,0,0.45)] transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/60 hover:shadow-[0_25px_80px_rgba(99,102,241,0.24)]">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-violet-500/10 opacity-0 transition duration-300 group-hover:opacity-100" />
 
-      <h2 className="mt-4 font-semibold line-clamp-2">
-        {product.title}
-      </h2>
+      <div className="relative mb-4 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/70 p-3">
+        <span className="absolute left-3 top-3 rounded-full bg-indigo-500/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-indigo-300">
+          {product.category}
+        </span>
+        <Image
+          src={product.image}
+          alt={product.title}
+          width={240}
+          height={240}
+          className="mx-auto h-48 w-full rounded-xl object-contain transition duration-300 group-hover:scale-105"
+          loading="eager"
+        />
+      </div>
 
-      <p className="text-gray-500 mt-2">
-        {product.category}
-      </p>
+      <div className="relative">
+        <h2 className="line-clamp-2 text-lg font-semibold text-white">
+          {product.title}
+        </h2>
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-sm text-zinc-400">Premium pick</span>
+          <span className="text-xl font-semibold text-indigo-400">${product.price}</span>
+        </div>
 
-      <p className="mt-2 text-blue-600 font-bold text-lg">
-        ${product.price}
-      </p>
-
-      <div className="flex gap-2 mt-4">
-        <Link
-          href={`/products/${product.id}`}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          View Details
-        </Link>
-
-        <button
-          onClick={() => addToCart(product)}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Add to Cart
-        </button>
+        <div className="mt-5 flex gap-2">
+          <Link
+            href={`/products/${product.id}`}
+            className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:border-indigo-400/50 hover:bg-indigo-500/15"
+          >
+            Details
+          </Link>
+          <button
+            onClick={() => addToCart(product)}
+            className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:shadow-indigo-500/40"
+          >
+            Add
+          </button>
+        </div>
       </div>
     </div>
   );
