@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Product matches FakeStore fields plus admin-level discount
+model Product {
+  id              Int      @id
+  title           String
+  price           Float
+  category        String
+  image           String
+  description     String
+  discountPercent Float    @default(0) // per-product discount, replaces JSON approach
+}
+
+// Category lists distinct categories with category-level discounts
+model Category {
+  id              Int      @id @default(autoincrement())
+  name            String   @unique // matches FakeStore category strings
+  discountPercent Float    @default(0) // per-category discount
+}
+
+// Settings stores global settings (singleton row, id = 1)
+model Settings {
+  id           Int   @id @default(1)
+  cartDiscount Float @default(0) // global cart discount percent
+}
+
+// Order stores billing/shipping info, payment status, status, and discount-calculated totals
+model Order {
+  id               Int         @id @default(autoincrement())
+  customerName     String
+  customerEmail    String
+  customerPhone    String
+  addressLine1     String
+  addressLine2     String?
+  city             String
+  state            String
+  pincode          String
+  country          String
+  paymentMethod    String      // "UPI" | "CARD" | "COD"
+  paymentStatus    String      // "PAID" for UPI/CARD, "PENDING" for COD
+  status           String      @default("Confirmed") // Pending | Confirmed | Shipped | Delivered | Cancelled
+  subtotal         Float
+  productDiscount  Float
+  categoryDiscount Float
+  cartDiscount     Float
+  finalAmount      Float
+  createdAt        DateTime    @default(now())
+  items            OrderItem[]
+}
+
+// OrderItem references each product in an order
+model OrderItem {
+  id        Int    @id @default(autoincrement())
+  orderId   Int
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  title     String
+  image     String
+  quantity  Int
+  unitPrice Float
+  lineTotal Float
+}

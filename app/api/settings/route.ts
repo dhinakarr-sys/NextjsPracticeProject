@@ -1,38 +1,63 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { prisma } from "@/lib/prisma";
 
-const SETTINGS_PATH = path.join(process.cwd(), "data", "settings.json");
-
-async function readSettings() {
+export async function GET() {
   try {
-    const content = await fs.readFile(SETTINGS_PATH, "utf8");
-    return JSON.parse(content);
-  } catch (e) {
-    return { cartDiscount: 0, productDiscounts: {} };
+    let settings = await prisma.settings.findUnique({ where: { id: 1 } });
+    if (!settings) {
+      settings = await prisma.settings.create({ data: { id: 1, cartDiscount: 0 } });
+    }
+    
+    // Construct the legacy response format so AdminSettings doesn't break immediately
+    const products = await prisma.product.findMany();
+    const productDiscounts: Record<string, number> = {};
+    products.forEach((p) => {
+      if (p.discountPercent > 0) {
+        productDiscounts[String(p.id)] = p.discountPercent;
+      }
+    });
+
+    return NextResponse.json({
+      cartDiscount: settings.cartDiscount,
+      productDiscounts
+    });
+  } catch (error) {
+    console.error("Settings GET error:", error);
+    return NextResponse.json({ error: "Failed to fetch settings" }, { status: 500 });
   }
 }
 
-async function writeSettings(data: any) {
-  await fs.writeFile(SETTINGS_PATH, JSON.stringify(data, null, 2), "utf8");
-}
-
-export async function GET() {
-  const settings = await readSettings();
-  return NextResponse.json(settings);
-}
-
 export async function PUT(request: Request) {
-  const body = await request.json();
-  const settings = await readSettings();
-  const updated = { ...settings, ...body };
-  await writeSettings(updated);
-  return NextResponse.json({ message: "Settings updated", settings: updated });
+  try {
+    const body = await request.json();
+    const cartDiscount = typeof body.cartDiscount === 'number' ? body.cartDiscount : 0;
+    
+    const settings = await prisma.settings.upsert({
+      where: { id: 1 },
+      update: { cartDiscount },
+      create: { id: 1, cartDiscount },
+    });
+    
+    if (body.productDiscounts) {
+      const updates = Object.entries(body.productDiscounts).map(async ([id, discount]) => {
+        const productId = parseInt(id, 10);
+        if (!isNaN(productId)) {
+          return prisma.product.update({
+            where: { id: productId },
+            data: { discountPercent: Number(discount) }
+          }).catch(() => null); 
+        }
+      });
+      await Promise.all(updates);
+    }
+    
+    return NextResponse.json({ message: "Settings updated", settings });
+  } catch (error) {
+    console.error("Settings PUT error:", error);
+    return NextResponse.json({ error: "Failed to update settings" }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
-  // allow full replace
-  const body = await request.json();
-  await writeSettings(body);
-  return NextResponse.json({ message: "Settings saved", settings: body }, { status: 201 });
+  return PUT(request); // Support legacy POST replace calls
 }

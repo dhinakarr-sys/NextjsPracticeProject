@@ -11,8 +11,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // Dev-grade gating: Checking hardcoded cookie in client layout
     const role = sessionStorage.getItem("role");
-    if (role !== "admin") {
+    const hasCookie = document.cookie.includes("admin_logged_in=true");
+    if (role !== "admin" || !hasCookie) {
       const target = pathname && pathname !== "/admin" ? pathname : "/admin";
       router.replace(`/login?redirect=${encodeURIComponent(target)}`);
       return;

@@ -8,6 +8,7 @@ import CartDrawer from "./CartDrawer";
 const links = [
   { href: "/", label: "Home" },
   { href: "/products", label: "Products" },
+  { href: "/orders", label: "Order History" },
 ];
 
 export default function Header() {
