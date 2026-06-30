@@ -38,7 +38,7 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
 
   return (
     <div className="fixed inset-0 z-[60] flex justify-end bg-black/70">
-      <div className="h-full w-full max-w-xl border-l border-white/10 bg-[#0f1117] p-6 shadow-2xl">
+      <div className="h-full w-full max-w-xl border-l border-white/10 bg-[#10131b] p-6 shadow-2xl">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Your cart</p>
@@ -53,12 +53,12 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
               Your cart is empty. Add a product to continue.
             </div>
           ) : loading ? (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-zinc-400">Loading summary…</div>
+            <div className="rounded-2xl border border-white/10 bg-[#121620] p-6 text-center text-zinc-400">Loading summary…</div>
           ) : (
             cart.map((item) => {
               const detail = summary?.items?.find((d: any) => d.id === item.id);
               return (
-                <div key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div key={item.id} className="rounded-2xl border border-white/10 bg-[#121620] p-4">
                   <div className="flex gap-3">
                     <div className="h-16 w-16 overflow-hidden rounded-xl bg-zinc-950/80 p-1">
                       <Image src={item.image} alt={item.title} width={64} height={64} className="h-full w-full rounded-lg object-contain" />
@@ -123,7 +123,16 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
           ) : null}
         </div>
 
-        <CheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} summary={summary} cart={cart} onSuccess={() => { setToast("Order placed successfully"); clearCart(); setCheckoutOpen(false); }} />
+        <CheckoutModal
+          open={checkoutOpen}
+          onClose={() => setCheckoutOpen(false)}
+          summary={summary}
+          cart={cart}
+          onSuccess={() => {
+            setToast("Order placed successfully");
+            clearCart();
+          }}
+        />
         <Toast message={toast} onClose={() => setToast(null)} />
       </div>
     </div>

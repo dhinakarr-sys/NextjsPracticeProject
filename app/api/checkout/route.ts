@@ -17,42 +17,48 @@ let orders: any[] = [];
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { customerName, customerEmail, items } = body;
+  const name = body.name ?? body.customerName;
+  const email = body.email ?? body.customerEmail;
+  const items: any[] = body.cartItems ?? body.items ?? [];
 
-  if (!customerName || !customerEmail) {
+  if (!name || !email) {
     return NextResponse.json({ error: "Missing customer info" }, { status: 400 });
   }
 
   const settings = await readSettings();
 
-  const subtotal = (items || []).reduce((s: number, it: any) => s + it.price * it.quantity, 0);
+  const subtotal = items.reduce((s: number, it: any) => s + it.price * it.quantity, 0);
 
-  const productDiscount = (items || []).reduce((s: number, it: any) => {
+  const itemDetails = items.map((it: any) => {
     const pd = settings.productDiscounts?.[String(it.id)] ?? 0;
-    return s + it.price * it.quantity * (pd / 100);
-  }, 0);
+    const original = it.price * it.quantity;
+    const discountAmount = original * (pd / 100);
+    const final = original - discountAmount;
+    return { id: it.id, title: it.title, quantity: it.quantity, original, discountAmount, final, productDiscountPercent: pd };
+  });
 
+  const productDiscount = itemDetails.reduce((s, d) => s + d.discountAmount, 0);
   const afterProduct = subtotal - productDiscount;
   const cartDiscountPercent = settings.cartDiscount ?? 0;
   const cartDiscount = afterProduct * (cartDiscountPercent / 100);
-
   const finalAmount = Math.max(0, afterProduct - cartDiscount);
 
   const order = {
     id: Date.now(),
-    customerName,
-    customerEmail,
-    items,
+    name,
+    email,
+    items: itemDetails,
     subtotal,
     productDiscount,
     cartDiscount,
+    cartDiscountPercent,
     finalAmount,
     createdAt: new Date().toISOString(),
   };
 
   orders.push(order);
 
-  return NextResponse.json({ message: "Order confirmed", order: { subtotal, productDiscount, cartDiscount, finalAmount, id: order.id } }, { status: 201 });
+  return NextResponse.json({ message: "Order confirmed", order }, { status: 201 });
 }
 
 export async function GET() {

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { CartProvider } from "@/context/CartContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import AppShell from "@/components/AppShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,9 +17,7 @@ export default function RootLayout({
     <html lang="en" className="bg-[#06060a]">
       <body className="bg-transparent text-zinc-100">
         <CartProvider>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
+          <AppShell>{children}</AppShell>
         </CartProvider>
       </body>
     </html>
