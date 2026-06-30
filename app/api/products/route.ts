@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 
-const products: any[] = [];
+type Product = {
+  id?: number;
+  title: string;
+  price: number;
+  category: string;
+  image: string;
+  description: string;
+  discount?: number;
+};
+
+const products: Product[] = [];
 
 export async function GET() {
   return NextResponse.json(products);
@@ -9,12 +19,18 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await request.json();
 
-  products.push(body);
+  const productWithId = {
+    ...body,
+    id: Date.now(),
+    discount: body.discount ?? 0,
+  };
+
+  products.push(productWithId);
 
   return NextResponse.json(
     {
       message: "Product Added Successfully",
-      product: body,
+      product: productWithId,
     },
     {
       status: 201,

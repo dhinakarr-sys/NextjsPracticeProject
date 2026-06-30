@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
+import CartDrawer from "./CartDrawer";
 
 const links = [
   { href: "/", label: "Home" },
@@ -11,8 +12,9 @@ const links = [
 ];
 
 export default function Header() {
-  const { cart } = useCart();
+  const { cart, getCount } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl">
@@ -37,10 +39,10 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <div className="flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-2 text-sm font-semibold text-indigo-300">
+            <button onClick={() => setCartOpen(true)} className="flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-2 text-sm font-semibold text-indigo-300">
             <span>🛒</span>
-            <span>{cart.length}</span>
-          </div>
+              <span>{getCount()}</span>
+          </button>
         </div>
 
         <button
@@ -65,13 +67,14 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-2 text-sm font-semibold text-indigo-300">
+            <button onClick={() => setCartOpen(true)} className="flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-2 text-sm font-semibold text-indigo-300">
               <span>🛒</span>
-              <span>Cart {cart.length}</span>
-            </div>
+              <span>Cart {getCount()}</span>
+            </button>
           </div>
         </div>
       ) : null}
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
   );
 }

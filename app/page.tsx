@@ -51,22 +51,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-[#12121a]/80 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-            <div className="animate-float-glow rounded-[1.5rem] border border-indigo-400/20 bg-gradient-to-br from-indigo-500/15 via-violet-500/10 to-fuchsia-500/10 p-8">
-              <div className="flex items-center justify-between">
-                <p className="text-sm uppercase tracking-[0.35em] text-zinc-400">Limited edition</p>
-                <span className="rounded-full bg-indigo-500/15 px-3 py-1 text-sm font-medium text-indigo-300">Trending</span>
-              </div>
-              <div className="mt-6 h-44 rounded-2xl border border-white/10 bg-zinc-950/70" />
-              <div className="mt-6 flex items-end justify-between">
-                <div>
-                  <p className="text-2xl font-semibold text-white">Aurora Tech Set</p>
-                  <p className="mt-2 text-sm text-zinc-400">Refined performance for the modern workspace.</p>
-                </div>
-                <p className="text-2xl font-semibold text-indigo-300">$299</p>
-              </div>
-            </div>
-          </div>
+  
         </div>
       </section>
 

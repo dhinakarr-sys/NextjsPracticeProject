@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export default function NotFound() {
-  return (
+   return(
     <div className="flex min-h-[70vh] items-center justify-center px-4">
       <div className="w-full max-w-xl rounded-[2rem] border border-white/10 bg-[#111119]/85 p-10 text-center shadow-[0_20px_70px_rgba(0,0,0,0.35)]">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-indigo-500/10 text-4xl font-black text-indigo-300">

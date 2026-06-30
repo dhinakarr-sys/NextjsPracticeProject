@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { useEffect, useState } from "react";
 
 type ProductCardProps = {
   product: {
@@ -16,6 +17,28 @@ type ProductCardProps = {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const [loading, setLoading] = useState(false);
+  const [detail, setDetail] = useState<any>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/cart/summary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: [{ id: product.id, title: product.title, price: product.price, quantity: 1 }] }) });
+        const data = await res.json();
+        if (!mounted) return;
+        setDetail(data.items?.[0] ?? null);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    load();
+    return () => { mounted = false; };
+  }, [product.id, product.price, product.title]);
 
   return (
     <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-[#15151c]/90 p-4 shadow-[0_20px_70px_rgba(0,0,0,0.45)] transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/60 hover:shadow-[0_25px_80px_rgba(99,102,241,0.24)]">
@@ -31,6 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           width={240}
           height={240}
           className="mx-auto h-48 w-full rounded-xl object-contain transition duration-300 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 33vw"
           loading="eager"
         />
       </div>
@@ -40,8 +64,20 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.title}
         </h2>
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-sm text-zinc-400">Premium pick</span>
-          <span className="text-xl font-semibold text-indigo-400">${product.price}</span>
+          <div className="text-sm text-zinc-400">Premium pick</div>
+          <div className="text-right text-sm">
+            {loading ? (
+              <div className="text-zinc-400">Loading price…</div>
+            ) : detail ? (
+              <div>
+                <div className="text-zinc-400">Original ${product.price.toFixed(2)}</div>
+                <div className="text-indigo-300">- ${detail.discountAmount.toFixed(2)}</div>
+                <div className="text-xl font-semibold text-indigo-400">${detail.final.toFixed(2)}</div>
+              </div>
+            ) : (
+              <div className="text-xl font-semibold text-indigo-400">${product.price.toFixed(2)}</div>
+            )}
+          </div>
         </div>
 
         <div className="mt-5 flex gap-2">

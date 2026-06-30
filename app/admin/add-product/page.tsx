@@ -8,6 +8,7 @@ export default function AddProductPage() {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
+  const [discount, setDiscount] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,7 +21,7 @@ export default function AddProductPage() {
       const response = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, price: Number(price), category, image }),
+        body: JSON.stringify({ title, description, price: Number(price), category, image, discount: Number(discount) || 0 }),
       });
 
       const data = await response.json();
@@ -32,6 +33,7 @@ export default function AddProductPage() {
       setPrice("");
       setCategory("");
       setImage("");
+      setDiscount("");
     } catch (error) {
       setStatusMessage(error instanceof Error ? error.message : "Failed to add product");
     } finally {
@@ -71,6 +73,11 @@ export default function AddProductPage() {
           <div>
             <label className="mb-2 block text-sm font-medium text-zinc-300">Image URL</label>
             <input type="text" placeholder="https://example.com/image.jpg" className="input-field" value={image} onChange={(e) => setImage(e.target.value)} />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-zinc-300">Discount (%)</label>
+            <input type="number" min="0" max="100" placeholder="10" className="input-field" value={discount} onChange={(e) => setDiscount(e.target.value)} />
           </div>
 
           {statusMessage ? (

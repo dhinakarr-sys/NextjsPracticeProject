@@ -59,6 +59,7 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
               width={500}
               height={500}
               className="mx-auto h-[360px] w-full rounded-[1.25rem] object-contain"
+              sizes="(max-width: 768px) 100vw, 50vw"
               priority
             />
           </div>
